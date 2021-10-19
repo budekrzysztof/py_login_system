@@ -11,7 +11,8 @@ class DatabaseHandler:
             connection.commit()
             return True
         except:
-            return False
+            print(Utilities().error_codes['ec_database_connection'])
+        return False
 
     def display_users_command(self, connection):
         try:
@@ -20,7 +21,7 @@ class DatabaseHandler:
             for row in cur.execute('SELECT login, name, email FROM users ORDER BY id_number').fetchall():
                 print(row)
         except:
-            print("an error occurred while trying to display all users")
+            print(Utilities().error_codes['ec_database_connection'])
 
     def does_username_exists_command(self, username, connection): # return true if such account exists
         valid_flag = False
@@ -31,8 +32,7 @@ class DatabaseHandler:
                     valid_flag = True
                     break
         except:
-            print("an error occurred while trying to check if username exists")
-
+            print(Utilities().error_codes['ec_database_connection'])
         return valid_flag
 
     def login_command(self, username, password, connection):
@@ -44,8 +44,7 @@ class DatabaseHandler:
                     success_flag = True
                     break
         except:
-            print("error occurred while trying to login an user")
-
+            print(Utilities().error_codes['ec_database_connection'])
         return success_flag
 
     def start_email_activation_command(self, username, email, connection):
@@ -56,4 +55,35 @@ class DatabaseHandler:
             connection.commit()
             MailHandler().send_activation_code(username, activation_code, email)
         except:
-            print("an error occurred while trying to send account activation email")
+            print(Utilities().error_codes['ec_send_activation_mail'])
+
+    def is_account_active(self, username, connection):
+        active_flag = False
+        try:
+            cur = connection.cursor()
+            for un in cur.execute('SELECT login, status FROM users').fetchall():
+                if un[0] == username and un[1] == 'active':
+                    active_flag = True
+                    break
+        except:
+            print(Utilities().error_codes['ec_database_connection'])
+        return active_flag
+
+    def account_activation(self, username, activation_code, connection):
+        success_flag = False
+
+        try:
+            cur = connection.cursor()
+            for un in cur.execute('SELECT username, code FROM user_activation_codes').fetchall():
+                 if un[0] == username and un[1] == int(activation_code):
+                    success_flag = True
+            if success_flag == True:
+                cur.execute('DELETE FROM user_activation_codes WHERE username=?', (username,))
+                cur.execute("UPDATE users SET status='active' WHERE login=?", (username,))
+                connection.commit()
+        except sqlite3.Error as error:
+            print(f"error code: {error}")
+
+        return success_flag
+
+

@@ -57,7 +57,7 @@ class DatabaseHandler:
         except:
             print(Utilities().error_codes['ec_send_activation_mail'])
 
-    def is_account_active(self, username, connection):
+    def is_account_active_command(self, username, connection):
         active_flag = False
         try:
             cur = connection.cursor()
@@ -69,7 +69,7 @@ class DatabaseHandler:
             print(Utilities().error_codes['ec_database_connection'])
         return active_flag
 
-    def account_activation(self, username, activation_code, connection):
+    def account_activation_command(self, username, activation_code, connection):
         success_flag = False
 
         try:

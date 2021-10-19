@@ -7,7 +7,7 @@ from Utilities import Utilities
 
 class AccountHandler:
     def __init__(self):
-        self.salt = "salty" # <- should be randomly generated
+        self.salt = "salty" # <- should be randomly generated for each user and kept next to a password hash
 
     def login(self):
         username = input("username: ").strip()
@@ -20,12 +20,16 @@ class AccountHandler:
         if succeeded open login panel
         else print error message and go back to menu
         """
+
+        login_flag = False
         with DatabaseConnection() as connection:
-            if DatabaseHandler().login_command(username, password, connection):
-                print("login successful")
-                UserPanel(username).run_user_panel()
-            else:
-                print("incorrect username or password")
+            login_flag = DatabaseHandler().login_command(username, password, connection)
+
+        if login_flag:
+            print("login successful")
+            UserPanel(username).run_user_panel()
+        else:
+            print("incorrect username or password")
 
     def register(self):
         # username input - break if username already exists or its invalid (not enough/too many or unrecognized characters)
@@ -72,18 +76,18 @@ class AccountHandler:
             except:
                 print(Utilities().error_codes['ec_account_creation'])
 
-    def is_strong_password(self, password) ->bool:
+    def is_strong_password(self, password):
         return re.compile(r'^(?=.*[a-z])(?=.*\d)(?=.*[A-Z])(?:.{8,})$').search(password)
 
-    def is_name_valid(self, name) ->bool:
+    def is_name_valid(self, name):
         valid_flag = False
 
-        if name.isalpha() and 2 < len(name) < 30:
+        if name.isalpha() and 1 < len(name) < 30:
             return True
 
         return False
 
-    def is_username_valid(self, username) ->bool:
+    def is_username_valid(self, username: str):
         valid_flag = False
 
         if 5 < len(username) < 31 and username.isalnum():

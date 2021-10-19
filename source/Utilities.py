@@ -10,7 +10,7 @@ class Utilities:
             'ec_account_creation' : "something when wrong while trying to create and account",
             'ec_account_exists' : "username already exists",
             'ec_username_invalid' : "username is not between 6 and 30 characters or contains unrecognized characters",
-            'ec_name_invalid' : "name must be between 3 and 26 characters and contain only letters",
+            'ec_name_invalid' : "name must be between 2 and 26 characters and contain only letters",
             'ec_send_activation_mail' : "an error occurred while trying to send account activation email",
         }
 

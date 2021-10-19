@@ -8,12 +8,16 @@ class UserPanel:
         self.username = username
 
     def run_user_panel(self):
+        account_active = None
+
         with DatabaseConnection() as connection:
-            if DatabaseHandler().is_account_active(self.username, connection):
-                self.run_user_menu()
-            else:
-                print('in order to login you must activate your account')
-                self.account_activation()
+            account_active = DatabaseHandler().is_account_active_command(self.username, connection)
+
+        if account_active:
+            self.run_user_menu()
+        else:
+            print('in order to login you must activate your account')
+            self.account_activation()
 
     def run_user_menu(self):
         while True:
@@ -37,15 +41,20 @@ class UserPanel:
         while choice == 'yes':
             activation_code = input('enter the activation code that was sent your email account: ').strip()
             if len(activation_code) == 6 and activation_code.isdigit():
+                success_flag = False
+
                 with DatabaseConnection() as connection:
-                    if DatabaseHandler().account_activation(self.username, activation_code, connection):
-                        print('account was successfully activated')
-                        self.run_user_menu()
-                    else:
-                        print("activation code was not correct")
+                    success_flag = DatabaseHandler().account_activation_command(self.username, activation_code, connection)
+
+                if success_flag:
+                    print('account was successfully activated')
+                    self.run_user_menu()
+                    break
+                else:
+                    print("activation code was not correct")
             else:
                 print("code is not valid")
-            choice = input('want to try again? yes/no\n').lower()
+            choice = input('want to try again? ').lower()
 
     def settings(self):
         while True:

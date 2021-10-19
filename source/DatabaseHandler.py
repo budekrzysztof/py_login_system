@@ -4,17 +4,6 @@ from MailHandler import MailHandler
 
 
 class DatabaseHandler:
-    def get_mail_config(self):
-        """
-        here it needs to locate settings.json containing
-        {
-        "sender_address" : "server email address",
-        "password" : "password to servers email"
-        }
-        """
-        with open("../../source/settings.json", "r") as jsonfile:
-            return json.load(jsonfile)
-
     def add_user_command(self, username, name, password, email, connection):
         try:
             cur = connection.cursor()

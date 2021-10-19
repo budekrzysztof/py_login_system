@@ -1,9 +1,13 @@
 A login/register system written in python. 
-Includes many features such as:
-- 2FA
+Includes features such as:
 - email verification by sending activation codes
 - data storing in sqlite3
 - password storing in sha2 hash
+To be added in close future:
+- implement 2FA
+- implete account delete
+- expand settings
+- admin panel
 
 Empty database provided in /database
 

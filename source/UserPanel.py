@@ -10,9 +10,11 @@ class UserPanel:
     def run_user_panel(self):
         account_active = None
 
+        # check if account is active
         with DatabaseConnection() as connection:
             account_active = DatabaseHandler().is_account_active_command(self.username, connection)
 
+        # if its active continue to user menu, go to activation process instead
         if account_active:
             self.run_user_menu()
         else:
@@ -39,10 +41,11 @@ class UserPanel:
     def account_activation(self):
         choice = 'yes'
         while choice == 'yes':
-            activation_code = input('enter the activation code that was sent your email account: ').strip()
+            activation_code = input('enter the activation code that was sent your email address: ').strip()
             if len(activation_code) == 6 and activation_code.isdigit():
                 success_flag = False
 
+                # try to activate an account and proceed to menu if succeeded
                 with DatabaseConnection() as connection:
                     success_flag = DatabaseHandler().account_activation_command(self.username, activation_code, connection)
 
@@ -51,9 +54,10 @@ class UserPanel:
                     self.run_user_menu()
                     break
                 else:
+                    # here will be an option to resend an activation code (but only every one minute)
                     print("activation code was not correct")
             else:
-                print("code is not valid")
+                print("code should only contain 6 digits")
             choice = input('want to try again? ').lower()
 
     def settings(self):

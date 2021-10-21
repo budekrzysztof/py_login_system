@@ -11,10 +11,11 @@ To be added in close future:
 - implement account delete
 - admin panel
 
-Empty database and settings.json file provided in /database
+To run this program you have to give MailUtils get_mail_config() and Utilities.get_salty() a path to a settings.json,
+a file containing username and password for a google account and salt for sha2.
+You can find an empty template file for settings.json inside database folder. Same with empty database.
 
-To run this program you have to give MailHandler a path to a settings.json file containing username and password for a google account.
-You can find an empty template file for settings.json inside database folder. For testing this program you should prepare new google account,
+For testing this program you should prepare new google account,
 as its adviced to not use personal/important email for it. 
 
 To let python send email you must allow less secure apps to login. 

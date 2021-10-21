@@ -11,9 +11,8 @@ To be added in close future:
 - implement account delete
 - admin panel
 
-To run this program you have to give MailUtils get_mail_config() and Utilities.get_salty() a path to a settings.json,
-a file containing username and password for a google account and salt for sha2.
 You can find an empty template file for settings.json inside database folder. Same with empty database.
+To run it you have to overwrite settings.json and enter credentials for email that will send server messages.
 
 For testing this program you should prepare new google account,
 as its adviced to not use personal/important email for it. 

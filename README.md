@@ -4,14 +4,14 @@ Includes features such as:
 - email verification by sending activation codes
 - data storing in sqlite3
 - password storing in sha2 hash
+- 2FA
+- changing password and mail from user panel
 
 To be added in close future:
-- implement 2FA
-- implete account delete
-- expand settings
+- implement account delete
 - admin panel
 
-Empty database provided in /database
+Empty database and settings.json file provided in /database
 
 To run this program you have to give MailHandler a path to a settings.json file containing username and password for a google account.
 You can find an empty template file for settings.json inside database folder. For testing this program you should prepare new google account,

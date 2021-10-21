@@ -1,19 +1,15 @@
-import re, hashlib
-
 from DatabaseHandler import DatabaseHandler
 from DatabaseConnection import DatabaseConnection
+from MailHandler import MailHandler
 from UserPanel import UserPanel
 from Utilities import Utilities
 
 class AccountHandler:
-    def __init__(self):
-        self.salt = "salty" # <- should be randomly generated for each user and kept next to a password hash
-
     def login(self):
         username = input("username: ").strip()
+
         password = input("password: ").strip()
-        # convert password to its hash using given salt
-        password = hashlib.sha512((password + self.salt).encode()).hexdigest()
+        password = Utilities().hash_password(password)
 
         """
         try to connect to database
@@ -26,71 +22,58 @@ class AccountHandler:
             login_flag = DatabaseHandler().login_command(username, password, connection)
 
         if login_flag:
-            print("login successful")
+            print('login successful')
             UserPanel(username).run_user_panel()
         else:
-            print("incorrect username or password")
+            print('incorrect username or password')
 
     def register(self):
-        # username input - break if username already exists or its invalid (not enough/too many or unrecognized characters)
-        username = input("username: ").strip()
+        # username validation
+        username = input('username: ').strip()
 
-        if not self.is_username_valid(username):
-            print(Utilities().error_codes['ec_username_invalid'])
+        if not Utilities().is_username_valid(username):
+            print('username must be between 6 and 30 characters and contain only alphanumeric characters')
             return
 
         with DatabaseConnection() as connection:
             if DatabaseHandler().does_username_exists_command(username, connection):
-                print(Utilities().error_codes['ec_account_exists'])
+                print('user with that username already exists')
                 return
 
-        # input for a name which needs more validation too!
+        # name validation
         name = input("name: ").strip()
-        if not self.is_name_valid(name):
-            print(Utilities().error_codes['ec_name_invalid'])
+        if not Utilities().is_name_valid(name):
+            print('name must be between 2 and 30 characters and contain only letters')
             return
 
-        # password input - break if password does not cover requirements for strong password
+        # password validation
         password = input("password: ").strip()
-        if self.is_strong_password(password):
-            password = hashlib.sha512((password + self.salt).encode()).hexdigest()
+        if Utilities().is_strong_password(password):
+            # if its valid hash it immediately
+            password = Utilities().hash_password(password)
         else:
-            print(Utilities().error_codes['ec_secure_password'])
+            print('password must contain 8 characters, both lower and uppercase letter, special sign and a number')
             return
 
         # repeat password and break if they don't match
         password_repeat = input("password again: ").strip()
-        if not password == hashlib.sha512((password_repeat + self.salt).encode()).hexdigest():
-            print(Utilities().error_codes['ec_pwd_match'])
+        if not password == Utilities().hash_password(password_repeat):
+            print('passwords do not match')
             return
 
         # need email validation here!!!
         email = input("email: ")
 
+        activation_code = Utilities().generate_auth_code()
         # try to connect to database and insert new user
         with DatabaseConnection() as connection:
-            try:
-                DatabaseHandler().add_user_command(username, name, password, email, connection)
-                DatabaseHandler().start_email_activation_command(username, email, connection)
-                print(f"successfully registered. activation code was send to {email}")
-            except:
-                print(Utilities().error_codes['ec_account_creation'])
+            if DatabaseHandler().add_user_command(username, name, password, email, connection):
+                if DatabaseHandler().start_email_activation_command(username, activation_code, connection):
+                    MailHandler().send_activation_code(username, activation_code, email)
+                    print(f"successfully registered. activation code was send to {email}")
+                    return
+        print('something went wrong while trying to create an account. try again')
 
-    def is_strong_password(self, password):
-        return re.compile(r'^(?=.*[a-z])(?=.*\d)(?=.*[A-Z])(?:.{8,})$').search(password)
 
-    def is_name_valid(self, name):
-        valid_flag = False
 
-        if name.isalpha() and 1 < len(name) < 30:
-            return True
 
-        return False
-
-    def is_username_valid(self, username: str):
-        valid_flag = False
-
-        if 5 < len(username) < 31 and username.isalnum():
-            valid_flag = True
-
-        return valid_flag

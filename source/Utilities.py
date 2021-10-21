@@ -1,21 +1,13 @@
 from random import randint
+import json, hashlib, re
 
 
 class Utilities:
-    def __init__(self):
-        self.error_codes = {
-            'ec_database_connection': "something went wrong while trying to access database",
-            'ec_secure_password': "password does not meet secure password requirements.",
-            'ec_pwd_match' : "passwords do not match",
-            'ec_account_creation' : "something when wrong while trying to create and account",
-            'ec_account_exists' : "username already exists",
-            'ec_username_invalid' : "username is not between 6 and 30 characters or contains unrecognized characters",
-            'ec_name_invalid' : "name must be between 2 and 26 characters and contain only letters",
-            'ec_send_activation_mail' : "an error occurred while trying to send account activation email",
-        }
-
     def generate_auth_code(self):
         return str(randint(103021, 983959))
+
+    def hash_password(self, password):
+        return hashlib.sha512((password + self.get_salty()).encode()).hexdigest()
 
     def display_main_menu(self):
         print("""
@@ -34,7 +26,33 @@ class Utilities:
 
     def display_settings(self):
         print("""
-1 > turn on two factor authentification (2FA)
-2 > delete account
+1 > two factor authentification
+2 > change password
+3 > change email address
+4 > delete account
 3 > back
 """)
+
+    # here locate settings.json too
+    def get_salty(self):
+         with open("../../source/settings.json", "r") as jsonfile:
+            return json.load(jsonfile)['salt']
+
+    def is_strong_password(self, password):
+        return re.compile(r'^(?=.*[a-z])(?=.*\d)(?=.*[A-Z])(?:.{8,})$').search(password)
+
+    def is_name_valid(self, name):
+        valid_flag = False
+
+        if name.isalpha() and 1 < len(name) < 31:
+            return True
+
+        return False
+
+    def is_username_valid(self, username: str):
+        valid_flag = False
+
+        if 5 < len(username) < 31 and username.isalnum():
+            valid_flag = True
+
+        return valid_flag

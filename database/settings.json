@@ -1,4 +1,5 @@
 {
 "sender_address" : "here put your google email address",
-"password" : "and here a password to it"
+"password" : "and here a password to it",
+"salt" : "salty"
 }

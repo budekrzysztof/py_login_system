@@ -35,7 +35,7 @@ class Utilities:
 
     # here locate settings.json too
     def get_salty(self):
-         with open("../../source/settings.json", "r") as jsonfile:
+         with open("database/settings.json", "r") as jsonfile:
             return json.load(jsonfile)['salt']
 
     def is_strong_password(self, password):

@@ -17,5 +17,5 @@ class MailUtils:
         "password" : "password to servers email"
         }
         """
-        with open("../../source/settings.json", "r") as jsonfile:
+        with open("database/settings.json", "r") as jsonfile:
             return json.load(jsonfile)

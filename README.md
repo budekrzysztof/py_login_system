@@ -1,13 +1,12 @@
-A login/register system written in python. 
+A login/register system in python. 
 
-Includes features such as:
+Including features such as:
 - email verification by sending activation codes
-- data storing in sqlite3
-- password storing in sha2 hash
+- data storing in SQL database
 - 2FA
 - changing password and mail from user panel
 
-To be added in close future:
+To be added:
 - implement account delete
 - admin panel
 
